@@ -4,15 +4,25 @@ model = DistilBertForSequenceClassification.from_pretrained(
     "distilbert-base-uncased", num_labels=2
 )
 candidate_labels = [
-    "attack",
-    "grab",
-    "move",
+    "attack something",
+    "take something",
+    "move somewhere",
 ]
+
+take_labels = ["cat", "dog", "car",]
+
+pipe = pipeline(model="typeform/distilbert-base-uncased-mnli")
+
 for i in range(5):
-    player_input = input("Player input:")
-    pipe = pipeline(model="typeform/distilbert-base-uncased-mnli")
+    import time
+    player_input = input("Player input: ")
+    start_time = time.time()
     result = pipe(player_input, candidate_labels=candidate_labels, multi_label=True)
-    labels = result["labels"]
-    scores = result["scores"]  # extracting the scores associated with the labels
+    labels, scores = result["labels"], result["scores"]
     res_dict = {label: score for label, score in zip(labels, scores)}
-    print("Action:", res_dict)
+    print("Action:", max(res_dict, key=res_dict.get))
+    if max(res_dict, key=res_dict.get) == "take something" or max(res_dict, key=res_dict.get) == "attack something":
+        result = pipe(player_input, candidate_labels=take_labels, multi_label=True)
+        labels, scores = result["labels"], result["scores"]
+        take_dict = {label: score for label, score in zip(labels, scores)}
+        print("that something is", max(take_dict, key=take_dict.get))
