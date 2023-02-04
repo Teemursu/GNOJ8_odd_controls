@@ -1,1 +1,7 @@
 .env/
+
+README.txt
+LICENSE
+LICENSE.txt
+addons/*
+pythonscript.gdnlib
